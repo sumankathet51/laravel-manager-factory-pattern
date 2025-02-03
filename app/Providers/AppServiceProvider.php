@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Application;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Application::macro('tenant', function () {
+            return $this->make('tenant');
+        });
+
+        Application::macro('settings', function () {
+            return $this->make('settings');
+        });
     }
 }

@@ -7,7 +7,10 @@ use App\Enums\LedgerTypeEnum;
 
 class DefaultService implements ErpDriverContract
 {
-
+    public function __construct(private readonly array $config)
+    {
+        // TODO: fetch token mechanism
+    }
     public function getInvoices(): string
     {
         return "Default-Invoice";

@@ -8,10 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 class GerpService implements ErpDriverContract
 {
-    public function __construct(private readonly array $config)
-    {
-        // TODO: fetch token mechanism
-    }
+    public function __construct(private readonly array $config)  {}
     public function getInvoices(): string
     {
         return "GERP-Invoice";

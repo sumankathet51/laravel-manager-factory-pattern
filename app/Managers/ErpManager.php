@@ -7,12 +7,9 @@ use App\Factories\ErpDriverFactory;
 
 class ErpManager
 {
-    protected $driverFactory;
-    protected $drivers = [];
+    protected array $drivers = [];
 
-    public function __construct(ErpDriverFactory $driverFactory) {
-        $this->driverFactory = $driverFactory;
-    }
+    public function __construct( private readonly ErpDriverFactory $driverFactory) {}
 
     public function driver(): ErpDriverContract {
         $driverName = settings('erp', 'default');

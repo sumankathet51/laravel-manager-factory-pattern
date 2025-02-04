@@ -2,7 +2,7 @@
 
 namespace App\Services\Erp;
 
-use App\Contracts\Erp\drivers\ErpDriverContract;
+use App\Contracts\Erp\Drivers\ErpDriverContract;
 use App\Enums\LedgerTypeEnum;
 
 class DefaultService implements ErpDriverContract

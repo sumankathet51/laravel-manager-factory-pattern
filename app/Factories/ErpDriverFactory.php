@@ -2,7 +2,7 @@
 
 namespace App\Factories;
 
-use App\Contracts\Erp\drivers\ErpDriverContract;
+use App\Contracts\Erp\Drivers\ErpDriverContract;
 
 class ErpDriverFactory
 {

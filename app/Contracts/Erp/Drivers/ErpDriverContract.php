@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts\Erp\drivers;
+namespace App\Contracts\Erp\Drivers;
 
 use App\Enums\LedgerTypeEnum;
 

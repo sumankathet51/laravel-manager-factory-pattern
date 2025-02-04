@@ -15,8 +15,12 @@ class InvoiceController extends Controller
 
     public function store(Request $request)
     {
-        $order = Order::create($request->input('order'));
-        $order->items()->createMany($request->input('order_items'));
+        $data = collect($request->all());
+        $orderDetails = $data['order_details'];
+        $data->forget('order_details');
+
+        $order = Order::create($data->toArray());
+        $order->items()->createMany($orderDetails);
 
         $erpService = app()->erpDriver();
         $res = $erpService->createInvoice($order);

@@ -25,6 +25,6 @@ class InvoiceController extends Controller
         $erpService = app()->erpDriver();
         $res = $erpService->createInvoice($order);
 
-        return response()->json(['data' => $res]);
+        return response()->json($res);
     }
 }

@@ -1,11 +1,9 @@
 <?php
-declare(strict_types=1);
 
 namespace App\Helpers;
 
-abstract readonly class MakeableDto
+abstract class Makeable
 {
-
     public static function make(...$args): static {
         $class = static::class;
         $reflection = new \ReflectionClass($class);
@@ -33,5 +31,4 @@ abstract readonly class MakeableDto
 
         return $args;
     }
-
 }

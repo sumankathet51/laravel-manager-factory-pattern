@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -15,15 +16,20 @@ class InvoiceController extends Controller
 
     public function store(Request $request)
     {
-        $data = collect($request->all());
-        $orderDetails = $data['order_details'];
-        $data->forget('order_details');
+        $res = [];
+        DB::transaction(function () use ($request, &$res) {
+            $data = collect($request->all());
+            $orderDetails = $data['order_details'];
+            $data->forget('order_details');
 
-        $order = Order::create($data->toArray());
-        $order->items()->createMany($orderDetails);
+            $order = Order::create($data->toArray());
+            $order->items()->createMany($orderDetails);
 
-        $erpService = app()->erpDriver();
-        $res = $erpService->createInvoice($order);
+            $erpService = app()->erpDriver();
+            $res = $erpService->createInvoice($order);
+
+        });
+
 
         return response()->json($res);
     }

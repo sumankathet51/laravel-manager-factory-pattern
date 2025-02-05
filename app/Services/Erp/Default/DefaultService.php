@@ -7,10 +7,12 @@ use App\Contracts\Erp\Drivers\ErpDriverContract;
 use App\Dtos\Erp\InvoiceDto;
 use App\Enums\LedgerTypeEnum;
 use App\Models\Order;
+use App\Services\CommandHistory;
+use App\Services\Erp\Default\Commands\CreateInvoiceCommand;
 
 final readonly class DefaultService implements ErpDriverContract
 {
-    public function __construct(private array $config, private array $adapters)
+    public function __construct(private array $config, private array $adapters, private CommandHistory $history)
     {
         // TODO: fetch token mechanism
     }
@@ -36,9 +38,12 @@ final readonly class DefaultService implements ErpDriverContract
         $invoiceData = InvoiceDto::fromOrder($order);
         $data = $adapter->toInvoice($invoiceData);
 
-        // Some Database Operations
+        $createInvoiceCommand = CreateInvoiceCommand::make($data, $this->config['api_key'], $this->config['api_secret'], $this->config['api_url']);
+        $createInvoiceCommand->execute();
 
-        return ['message' => "Response From Default Service", 'data' => $data];
+        $this->history->push($createInvoiceCommand);
+
+        return $createInvoiceCommand->getResponse();
     }
     public function createLedger(array $data, LedgerTypeEnum $ledgerType): array
     {

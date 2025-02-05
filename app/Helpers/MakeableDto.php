@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-abstract class MakeableDto
+abstract readonly class MakeableDto
 {
 
     public static function make(...$args): static {

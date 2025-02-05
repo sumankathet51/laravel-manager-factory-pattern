@@ -3,7 +3,10 @@
 return [
     'drivers' => [
         'gerp' => [
-            'class' => \App\Services\Erp\GerpService::class,
+            'class' => \App\Services\Erp\Gerp\GerpService::class,
+            'adapters' => [
+                'invoice' => \App\Services\Erp\Gerp\Adapters\GerpInvoiceAdapter::class
+            ],
             'config' => [
                 'api_key' => env('GERP_API_KEY'),
                 'api_secret' => env('GERP_API_SECRET'),
@@ -11,7 +14,10 @@ return [
             ]
         ],
         'default' => [
-            'class' => \App\Services\Erp\DefaultService::class,
+            'class' => \App\Services\Erp\Default\DefaultService::class,
+            'adapters' => [
+                'invoice' => \App\Services\Erp\Default\Adapters\ErpInvoiceAdapter::class
+            ],
             'config' => []
         ],
     ]

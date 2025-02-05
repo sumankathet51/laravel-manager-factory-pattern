@@ -3,8 +3,8 @@
 
 use App\Factories\ErpDriverFactory;
 use App\Managers\ErpManager;
-use App\Services\Erp\DefaultService;
-use App\Services\Erp\GerpService;
+use App\Services\Erp\Default\DefaultService;
+use App\Services\Erp\Gerp\GerpService;
 
 it('tests ErpDriverFactory for correct driver instance initialization', function () {
     $factory = new ErpDriverFactory();

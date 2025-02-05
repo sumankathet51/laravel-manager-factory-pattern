@@ -26,7 +26,8 @@ class ErpDriverFactory
 
         // Instantiate the service class with its configuration
         return app($serviceClass, [
-            'config' => $driverConfig['config']
+            'config' => $driverConfig['config'],
+            'adapters' => $driverConfig['adapters'],
         ]);
     }
 }

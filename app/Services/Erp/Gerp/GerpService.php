@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Services\Erp;
+namespace App\Services\Erp\Gerp;
 
+use App\Contracts\Erp\Adapters\ErpInvoiceAdapterContract;
 use App\Contracts\Erp\Drivers\ErpDriverContract;
+use App\Dtos\Erp\InvoiceDto;
 use App\Enums\LedgerTypeEnum;
+use App\Models\Order;
 use Illuminate\Support\Facades\Http;
 
-class GerpService implements ErpDriverContract
+final readonly class GerpService implements ErpDriverContract
 {
-    public function __construct(private readonly array $config)  {}
+    public function __construct(private array $config, private array $adapters)  {}
     public function getInvoices(): string
     {
         return "GERP-Invoice";
@@ -16,7 +19,7 @@ class GerpService implements ErpDriverContract
 
     public function createCustomer(array $data)
     {
-        Http::withHeaders([
+        Http::fake(fn() => Http::response(['data' => $data, 'message' => 'Success'], 200))->withHeaders([
             'api-key' => $this->config['api_key'],
             'api-secret' => $this->config['api_secret'],
         ])->post($this->config['api_url'] . '/customers', $data);
@@ -26,7 +29,7 @@ class GerpService implements ErpDriverContract
 
     public function update($post, $data)
     {
-        Http::withHeaders([
+        Http::fake(fn() => Http::response(['data' => $data, 'message' => 'Success'], 200))->withHeaders([
             'api-key' => $this->config['api_key'],
             'api-secret' => $this->config['api_secret'],
         ])->patch($this->config['api_url'] . '/customers', $data);
@@ -34,9 +37,14 @@ class GerpService implements ErpDriverContract
         return true;
     }
 
-    public function createInvoice(array $data): array
+    public function createInvoice(Order $order): array
     {
-        $response = Http::withHeaders([
+        $adapter = $this->adapters['invoice'] ? app($this->adapters['invoice']) : app(ErpInvoiceAdapterContract::class);
+
+        $invoiceData = InvoiceDto::fromOrder($order);
+        $data = $adapter->toInvoice($invoiceData);
+
+        $response = Http::fake(fn() => Http::response(['message' => "Response From GERP Service", 'data' => $data], 200))->withHeaders([
             'api-key' => $this->config['api_key'],
             'api-secret' => $this->config['api_secret'],
         ])->post($this->config['api_url'] . '/invoices', $data);
@@ -46,7 +54,7 @@ class GerpService implements ErpDriverContract
 
     public function createLedger(array $data, LedgerTypeEnum $ledgerType): array
     {
-        $response = Http::withHeaders([
+        $response = Http::fake(fn() => Http::response(['data' => $data, 'message' => 'Success'], 200))->withHeaders([
             'api-key' => $this->config['api_key'],
             'api-secret' => $this->config['api_secret'],
         ])->post($this->config['api_url'] . '/ledgers', $data);

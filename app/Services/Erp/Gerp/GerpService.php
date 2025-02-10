@@ -7,11 +7,13 @@ use App\Contracts\Erp\Drivers\ErpDriverContract;
 use App\Dtos\Erp\InvoiceDto;
 use App\Enums\LedgerTypeEnum;
 use App\Models\Order;
+use App\Services\CommandHistory;
+use App\Services\Erp\Gerp\Commands\CreateInvoiceCommand;
 use Illuminate\Support\Facades\Http;
 
 final readonly class GerpService implements ErpDriverContract
 {
-    public function __construct(private array $config, private array $adapters)  {}
+    public function __construct(private array $config, private array $adapters, private CommandHistory $history)  {}
     public function getInvoices(): string
     {
         return "GERP-Invoice";
@@ -44,12 +46,12 @@ final readonly class GerpService implements ErpDriverContract
         $invoiceData = InvoiceDto::fromOrder($order);
         $data = $adapter->toInvoice($invoiceData);
 
-        $response = Http::fake(fn() => Http::response(['message' => "Response From GERP Service", 'data' => $data], 200))->withHeaders([
-            'api-key' => $this->config['api_key'],
-            'api-secret' => $this->config['api_secret'],
-        ])->post($this->config['api_url'] . '/invoices', $data);
+        $createInvoiceCommand = CreateInvoiceCommand::make($data, $this->config['api_key'], $this->config['api_secret'], $this->config['api_url']);
+        $createInvoiceCommand->execute();
 
-        return $response->json();
+        $this->history->push($createInvoiceCommand);
+
+        return $createInvoiceCommand->getResponse();
     }
 
     public function createLedger(array $data, LedgerTypeEnum $ledgerType): array

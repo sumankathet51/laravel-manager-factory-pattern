@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\TenantMiddleware;
+use App\Services\CommandHistory;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,5 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(TenantMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->reportable(function (Throwable $e) {
+            $commandHistory = app(CommandHistory::class);
+            $commandHistory->clear();
+        });
     })->create();
